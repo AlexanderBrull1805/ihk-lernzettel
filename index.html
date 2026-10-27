@@ -1,0 +1,922 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHK-Trainer – Lernzettel</title>
+<style>
+  :root { --blue:#1b3a6b; --green:#2e9e57; --greenbg:#e7f7ee; --line:#e3e3e8; }
+  * { box-sizing:border-box; }
+  body { font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:#222; margin:0; background:#f7f8fa; line-height:1.5; }
+  header { background:var(--blue); color:#fff; padding:22px 16px; }
+  header .wrap { max-width:900px; margin:0 auto; }
+  header h1 { margin:0 0 4px; font-size:1.5rem; }
+  header p { margin:0; color:#cbd6ea; font-size:.9rem; }
+  .toolbar { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid var(--line); padding:12px 16px; }
+  .toolbar .wrap { max-width:900px; margin:0 auto; display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:5px 12px; font-size:.82rem; cursor:pointer; }
+  .chip.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .toggle { margin-left:auto; border:1px solid var(--blue); background:var(--blue); color:#fff; border-radius:8px; padding:7px 14px; font-weight:bold; cursor:pointer; font-size:.85rem; }
+  main { max-width:900px; margin:0 auto; padding:20px 16px 70px; }
+  h2 { color:var(--blue); border-bottom:2px solid var(--line); padding-bottom:6px; margin-top:34px; }
+  h2 small { color:#8a8a8a; font-weight:normal; }
+  .q { background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px 16px; margin:12px 0; }
+  .qhead { display:flex; gap:10px; align-items:center; margin-bottom:6px; }
+  .num { background:#eef2f8; color:var(--blue); font-weight:bold; border-radius:6px; padding:1px 8px; font-size:.8rem; }
+  .multi { font-size:.72rem; background:#fff2d9; color:#9a6b00; border-radius:999px; padding:2px 8px; }
+  .qtext { font-weight:600; margin:4px 0 10px; }
+  .opts { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  .opt { border:1px solid var(--line); border-radius:8px; padding:8px 10px; display:flex; gap:8px; align-items:flex-start; }
+  .opt .mark { visibility:hidden; color:var(--green); font-weight:bold; }
+  .opt.correct { background:var(--greenbg); border-color:var(--green); }
+  .opt.correct .mark { visibility:visible; }
+  /* Lösungen ausgeblendet (Selbsttest-Modus) */
+  body.hide .opt.correct { background:#fff; border-color:var(--line); }
+  body.hide .opt.correct .mark { visibility:hidden; }
+  footer { text-align:center; color:#999; font-size:.8rem; padding:24px; }
+</style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>IHK-Trainer – Lernzettel</h1>
+      <p>100 Fragen aus 24 Themen · richtige Antworten grün markiert · Quelle: syntaxinstitut.github.io/IHK-Trainer</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="wrap">
+      <button class="chip active" data-topic="__all__" onclick="filter(this)">Alle</button>
+<button class="chip" data-topic="Networking" onclick="filter(this)">Networking <small>(3)</small></button>
+<button class="chip" data-topic="Web Basics" onclick="filter(this)">Web Basics <small>(3)</small></button>
+<button class="chip" data-topic="HTTP" onclick="filter(this)">HTTP <small>(5)</small></button>
+<button class="chip" data-topic="HTML" onclick="filter(this)">HTML <small>(8)</small></button>
+<button class="chip" data-topic="CSS" onclick="filter(this)">CSS <small>(15)</small></button>
+<button class="chip" data-topic="CSS Layout" onclick="filter(this)">CSS Layout <small>(2)</small></button>
+<button class="chip" data-topic="JavaScript" onclick="filter(this)">JavaScript <small>(19)</small></button>
+<button class="chip" data-topic="DOM" onclick="filter(this)">DOM <small>(3)</small></button>
+<button class="chip" data-topic="APIs" onclick="filter(this)">APIs <small>(1)</small></button>
+<button class="chip" data-topic="Async JS" onclick="filter(this)">Async JS <small>(2)</small></button>
+<button class="chip" data-topic="Tooling" onclick="filter(this)">Tooling <small>(3)</small></button>
+<button class="chip" data-topic="Accessibility" onclick="filter(this)">Accessibility <small>(1)</small></button>
+<button class="chip" data-topic="Security" onclick="filter(this)">Security <small>(2)</small></button>
+<button class="chip" data-topic="React Basics" onclick="filter(this)">React Basics <small>(2)</small></button>
+<button class="chip" data-topic="React" onclick="filter(this)">React <small>(10)</small></button>
+<button class="chip" data-topic="React Hooks" onclick="filter(this)">React Hooks <small>(5)</small></button>
+<button class="chip" data-topic="React Forms" onclick="filter(this)">React Forms <small>(1)</small></button>
+<button class="chip" data-topic="React Router" onclick="filter(this)">React Router <small>(3)</small></button>
+<button class="chip" data-topic="React Performance" onclick="filter(this)">React Performance <small>(3)</small></button>
+<button class="chip" data-topic="Web APIs" onclick="filter(this)">Web APIs <small>(2)</small></button>
+<button class="chip" data-topic="Performance" onclick="filter(this)">Performance <small>(2)</small></button>
+<button class="chip" data-topic="Deployment" onclick="filter(this)">Deployment <small>(1)</small></button>
+<button class="chip" data-topic="Testing" onclick="filter(this)">Testing <small>(2)</small></button>
+<button class="chip" data-topic="Architecture" onclick="filter(this)">Architecture <small>(2)</small></button>
+      <button class="toggle" id="t" onclick="toggleAns()">Antworten ausblenden</button>
+    </div>
+  </div>
+
+  <main>
+    
+    <section class="topic" data-topic="Networking">
+      <h2>Networking <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#1</span></div>
+        <p class="qtext">Was beschreibt der Begriff „Client“ im Web-Kontext am besten?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Ein Computer, der ausschließlich Datenbanken hostet</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Ein Programm (z.B. Browser), das Anfragen an einen Server stellt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Gerät, das nur WLAN-Signale verstärkt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Server, der HTTP-Requests ignoriert</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#2</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über IP-Adressen sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">IPv4 besteht typischerweise aus vier Zahlenblöcken (z.B. 192.168.0.1)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">127.0.0.1 ist die Loopback-Adresse (localhost)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine IP-Adresse ist immer ein frei wählbarer Benutzername</span></li><li class="opt"><span class="mark">✓</span><span class="txt">IPv4-Adressen bestehen aus 8 Zahlenblöcken</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#3</span></div>
+        <p class="qtext">Wofür wird ein DNS-Server hauptsächlich verwendet?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Um Domainnamen in IP-Adressen aufzulösen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um HTML in CSS zu konvertieren</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um JavaScript im Browser schneller auszuführen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um Passwörter zu verschlüsseln</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Web Basics">
+      <h2>Web Basics <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#4</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Teile können zu einer vollständigen URL gehören?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Protokoll (Scheme), Host/Domain, Pfad (Path), Query-Parameter</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur Domain und Dateiname, mehr ist nicht erlaubt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Protokoll, IP-Adresse, nur ein Query-Parameter</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Protokoll, Host/Domain, Pfad, Fragment (Hash)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#5</span></div>
+        <p class="qtext">Was ist der wichtigste Unterschied zwischen HTTP und HTTPS?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">HTTPS verschlüsselt die Verbindung (typisch via TLS), HTTP nicht</span></li><li class="opt"><span class="mark">✓</span><span class="txt">HTTP ist immer schneller als HTTPS</span></li><li class="opt"><span class="mark">✓</span><span class="txt">HTTPS funktioniert nur in mobilen Apps</span></li><li class="opt"><span class="mark">✓</span><span class="txt">HTTP kann keine Bilder übertragen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#100</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über den Ablauf eines Webseitenaufrufs sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Der Browser sendet eine Anfrage (Request) und erhält eine Antwort (Response)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Der Browser rendert die erhaltenen Ressourcen (HTML/CSS/JS) zur Darstellung</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Der Server rendert immer die UI im Browser, der Browser zeigt nur Bilder</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Zusätzliche Ressourcen (CSS/JS/Bilder) werden oft separat nachgeladen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="HTTP">
+      <h2>HTTP <small>(5 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#6</span></div>
+        <p class="qtext">Welche HTTP-Methoden werden typischerweise für CRUD verwendet?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">GET (Read), POST (Create), PUT/PATCH (Update), DELETE (Delete)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">READ, CREATE, UPDATE, REMOVE</span></li><li class="opt"><span class="mark">✓</span><span class="txt">FETCH, PUSH, CHANGE, DROP</span></li><li class="opt"><span class="mark">✓</span><span class="txt">OPEN, WRITE, EDIT, CLOSE</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#7</span></div>
+        <p class="qtext">Welche HTTP-Statuscodes bedeuten typischerweise Erfolg?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">2xx (z.B. 200, 201)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">3xx (z.B. 301, 302)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">4xx (z.B. 404, 401)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">5xx (z.B. 500, 503)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#8</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu HTTP-Requests sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Header enthalten Metadaten wie Content-Type oder Authorization</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Der Body ist nur bei GET erlaubt</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Query-Parameter stehen typischerweise nach einem ? in der URL</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Cookies werden nie im Kontext von HTTP genutzt</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#73</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Cookies sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Cookies können automatisch bei Requests an die Domain gesendet werden (je nach Einstellungen)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Cookies werden nur in JavaScript-Dateien gespeichert</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">HttpOnly-Cookies sind typischerweise nicht per JavaScript auslesbar</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Cookies werden nie für Authentifizierung verwendet</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#74</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu CORS sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">CORS regelt, ob eine Website Ressourcen von einer anderen Origin abrufen darf</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">CORS ist ein Browser-Sicherheitsmechanismus (nicht „Server blockiert“, sondern Browser setzt Regeln um)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">CORS bedeutet, dass HTTPS nicht benötigt wird</span></li><li class="opt"><span class="mark">✓</span><span class="txt">CORS hat nichts mit APIs zu tun</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="HTML">
+      <h2>HTML <small>(8 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#9</span></div>
+        <p class="qtext">Welche HTML-Elemente sind semantisch sinnvoll für die grobe Seitenstruktur?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">&lt;header&gt;, &lt;main&gt;, &lt;footer&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;div&gt;, &lt;span&gt;, &lt;b&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;table&gt;, &lt;tr&gt;, &lt;td&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;script&gt;, &lt;style&gt;, &lt;meta&gt;</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#10</span></div>
+        <p class="qtext">Wofür wird das alt-Attribut bei &lt;img&gt; verwendet?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Es definiert, wie stark ein Bild komprimiert wird</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es beschreibt den Bildinhalt als Text (wichtig für Accessibility/Fallback)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es ersetzt automatisch die src-URL</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es sorgt dafür, dass Bilder schneller laden</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#11</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Formulare in HTML sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Das required-Attribut erzwingt, dass ein Feld ausgefüllt wird (Browser-Validierung)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">&lt;label&gt; verbessert Usability/Accessibility, wenn es einem Input zugeordnet ist</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Formulare können keine Daten an einen Server senden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein &lt;button type=&quot;submit&quot;&gt; löst nie eine Formularaktion aus</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#12</span></div>
+        <p class="qtext">Welche Elemente werden typischerweise für Tabellen benötigt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">&lt;table&gt;, &lt;tr&gt;, &lt;td&gt;, &lt;th&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;grid&gt;, &lt;row&gt;, &lt;cell&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;tablelist&gt;, &lt;tu&gt;, &lt;item&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;tab&gt;, &lt;line&gt;, &lt;col&gt;</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#51</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über semantisches HTML sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Semantische Tags verbessern die Struktur und Verständlichkeit des Dokuments</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Semantische Tags können Accessibility (z.B. Screenreader) unterstützen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Semantisches HTML ersetzt CSS komplett</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Semantisches HTML kann SEO positiv beeinflussen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#52</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Tags sind typischerweise für Links und Navigation zuständig?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">&lt;a&gt;</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">&lt;nav&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;link&gt;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;section&gt;</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#53</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über das &lt;script&gt;-Tag sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Mit defer wird das Script nach dem Parsen von HTML ausgeführt</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Mit async wird das Script geladen und ausgeführt, sobald es verfügbar ist</span></li><li class="opt"><span class="mark">✓</span><span class="txt">&lt;script&gt; kann nur im &lt;head&gt; stehen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">JavaScript kann über &lt;script&gt; in eine Seite eingebunden werden</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#54</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über das &lt;link&gt;-Element sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es wird häufig genutzt, um externe CSS-Dateien einzubinden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es muss immer im &lt;body&gt; stehen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">rel=&quot;stylesheet&quot; kennzeichnet eine Stylesheet-Datei</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">href enthält typischerweise den Pfad zur Ressource</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="CSS">
+      <h2>CSS <small>(15 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#13</span></div>
+        <p class="qtext">Was bewirkt box-sizing: border-box;?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Padding und Border werden in width/height eingerechnet</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Alle Borders werden entfernt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Das Element wird automatisch zentriert</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur der Content zählt zur Breite, Padding wird addiert</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#14</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zum Box-Modell sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Margin ist der Außenabstand eines Elements</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Padding ist der Abstand zwischen Content und Border</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Border ist immer transparent und unsichtbar</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Content ist der innere Bereich (z.B. Text, Bild)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#15</span></div>
+        <p class="qtext">Was ist der Unterschied zwischen display: none und visibility: hidden?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">visibility: hidden lässt den Platz im Layout bestehen, display: none nicht</span></li><li class="opt"><span class="mark">✓</span><span class="txt">display: none versteckt nur Text, nicht Bilder</span></li><li class="opt"><span class="mark">✓</span><span class="txt">visibility: hidden entfernt das Element komplett aus dem DOM</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es gibt keinen Unterschied</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#16</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Selektoren sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Selektoren bestimmen, auf welche Elemente Styles angewendet werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">.klasse selektiert Elemente mit class=&quot;klasse&quot;</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">#id selektiert Elemente mit id=&quot;id&quot;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Selektoren funktionieren nur mit Inline-Styles</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#17</span></div>
+        <p class="qtext">Welche Eigenschaften helfen bei responsiven Bildern?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">max-width: 100%; height: auto;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">width: fixed; height: fixed;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">responsive: true;</span></li><li class="opt"><span class="mark">✓</span><span class="txt">size: fluid;</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#20</span></div>
+        <p class="qtext">Was sind Media Queries?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Bedingungen in CSS, um Styles abhängig von Geräteeigenschaften anzuwenden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein JavaScript-Feature zum Abfragen von APIs</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein HTML-Tag für Responsive Design</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine Datenbankabfrage</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#21</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Breakpoints sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Breakpoints sind Stellen, an denen sich das Layout für unterschiedliche Bildschirmgrößen anpasst</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Breakpoints sind ausschließlich in HTML definiert</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Breakpoints werden oft in Media Queries verwendet</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Breakpoints sind HTTP-Fehlercodes</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#55</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über CSS-Spezifität (specificity) sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">ID-Selektoren sind in der Regel spezifischer als Klassen-Selektoren</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Inline-Styles sind oft sehr spezifisch</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Je mehr Selektoren, desto geringer immer die Spezifität</span></li><li class="opt"><span class="mark">✓</span><span class="txt">!important sollte man immer standardmäßig nutzen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#56</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Einheiten sind in CSS relativ (relativ zur Schriftgröße oder zum Viewport)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">em</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">rem</span></li><li class="opt"><span class="mark">✓</span><span class="txt">px</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">vw</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#57</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu position: absolute sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Das Element wird aus dem normalen Dokumentenfluss genommen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Die Position bezieht sich auf den nächsten positionierten Vorfahren (nicht static)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es verhält sich immer wie position: fixed</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Ohne positionierten Vorfahren kann es sich auf das Dokument/Viewport beziehen (je nach Kontext)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#58</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu z-index sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">z-index wirkt nur bei positionierten Elementen (nicht static) oder in bestimmten Layout-Kontexten</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Ein höherer z-index-Wert bedeutet meist „weiter vorne“</span></li><li class="opt"><span class="mark">✓</span><span class="txt">z-index steuert die Schriftgröße</span></li><li class="opt"><span class="mark">✓</span><span class="txt">z-index funktioniert nur in Tabellen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#59</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Flexbox-Ausrichtung sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">justify-content richtet entlang der Hauptachse aus</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">align-items richtet entlang der Querachse aus</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">flex-direction bestimmt, ob die Hauptachse Reihe oder Spalte ist</span></li><li class="opt"><span class="mark">✓</span><span class="txt">gap ist in Flexbox nicht erlaubt</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#60</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über CSS Grid sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">grid-template-columns definiert die Spalten</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">grid-template-rows definiert die Zeilen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Grid eignet sich gut für zweidimensionale Layouts</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Grid kann keine Abstände zwischen Zellen definieren</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#61</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Transitionen in CSS sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">transition-duration legt fest, wie lange die Animation dauert</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">transition-property legt fest, welche Eigenschaft animiert wird</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Transitionen können nur mit JavaScript ausgelöst werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Transitionen eignen sich für einfache Zustandswechsel (z.B. :hover)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#62</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über CSS-Keyframes sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">@keyframes definiert Zwischenzustände einer Animation</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">animation-name verweist auf eine @keyframes-Definition</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Keyframes sind nur für SVG möglich</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">animation-iteration-count kann festlegen, wie oft die Animation wiederholt wird</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="CSS Layout">
+      <h2>CSS Layout <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#18</span></div>
+        <p class="qtext">Wofür eignet sich Flexbox typischerweise besonders gut?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Eindimensionale Layouts (Reihe ODER Spalte) und Ausrichtung</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Zweidimensionale Raster über die gesamte Seite (Rows und Columns gleichzeitig)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur für Print-Stylesheets</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur für Tabellen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#19</span></div>
+        <p class="qtext">Wofür eignet sich CSS Grid typischerweise besonders gut?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Komplexe zweidimensionale Layouts (Rows UND Columns)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur für kleine Buttons und Icons</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ausschließlich für Animationen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur für Inline-Elemente</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="JavaScript">
+      <h2>JavaScript <small>(19 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#22</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Werte sind in JavaScript typischerweise „falsy“?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">0</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">null</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">&quot;&quot; (leerer String)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">[] (leeres Array)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#23</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was ist der Unterschied zwischen null und undefined?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">null ist oft ein bewusst gesetzter leerer Wert, undefined ist „nicht gesetzt“/fehlt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">undefined ist ein Zahlentyp, null ist ein String</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Beide sind immer identisch und austauschbar</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">undefined wird oft automatisch vergeben, null setzt man typischerweise explizit</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#24</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was macht der Nullish Coalescing Operator (??)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Er gibt den rechten Wert zurück, nur wenn links null oder undefined ist</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Er ist identisch zu || in jedem Fall</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Er behandelt 0 und &quot;&quot; nicht automatisch als „leer“ (anders als ||)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Er vergleicht zwei Werte wie ===</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#25</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu let und const sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">let kann neu zugewiesen werden, const nicht</span></li><li class="opt"><span class="mark">✓</span><span class="txt">const verhindert jede Änderung am Inhalt von Objekten/Arrays</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">const muss bei Deklaration initialisiert werden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">let ist nur in Funktionen gültig (function scope)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#26</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Wie erstellt man ein leeres Array korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">const a = [];</span></li><li class="opt"><span class="mark">✓</span><span class="txt">const a = {};</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">const a = new Array();</span></li><li class="opt"><span class="mark">✓</span><span class="txt">const a = ();</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#27</span></div>
+        <p class="qtext">Was ist ein Array in JavaScript?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Eine geordnete Liste von Werten</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine einzelne Zahl</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine ungeordnete Menge ohne Reihenfolge</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein spezieller HTML-Tag</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#28</span></div>
+        <p class="qtext">Womit beginnt die Zählung bei Array-Indizes in JavaScript?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Bei 1</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Bei 0</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Bei -1</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Das ist zufällig und variiert je Browser</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#29</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was macht die Array-Methode map() typischerweise?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Sie verändert immer das Originalarray und gibt nichts zurück</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Sie erzeugt ein neues Array</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Sie wendet eine Funktion auf jedes Element an</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Die Länge des neuen Arrays entspricht normalerweise der alten</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#33</span></div>
+        <p class="qtext">Was ist der ternäre Operator (? :) ?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Eine Kurzform für einfache if-else-Ausdrücke</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine Methode zum Erstellen von Arrays</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Operator, der drei Zahlen addiert</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein React-spezifisches Feature</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#34</span></div>
+        <p class="qtext">Welche Aussage beschreibt JSON am besten?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Ein Datenformat (Text), das oft für API-Austausch genutzt wird</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein binäres Bildformat</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein CSS-Preprocessor</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein JavaScript-Framework</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#35</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Funktionen gehören zu JSON in JavaScript?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">JSON.parse() wandelt einen JSON-String in ein Objekt um</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">JSON.stringify() wandelt ein Objekt in einen JSON-String um</span></li><li class="opt"><span class="mark">✓</span><span class="txt">JSON.keys() gibt alle Schlüssel eines Objekts zurück</span></li><li class="opt"><span class="mark">✓</span><span class="txt">JSON.toArray() wandelt JSON direkt in ein Array um</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#63</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über === (strikte Gleichheit) sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">=== vergleicht Wert und Typ</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">=== führt keine Typumwandlung wie == durch</span></li><li class="opt"><span class="mark">✓</span><span class="txt">=== ist nur für Zahlen erlaubt</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">=== ist in JavaScript der Standardvergleich für exakte Vergleiche</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#64</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Funktionen in JavaScript sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Funktionen können Parameter entgegennehmen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Funktionen können Werte mit return zurückgeben</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine Funktion kann nur einmal im Programm aufgerufen werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Funktionen sind wiederverwendbare Code-Blöcke</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#65</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Arrow Functions sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Arrow Functions nutzen die Syntax () =&gt; {}</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Arrow Functions sind immer benannt und können nicht anonym sein</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Arrow Functions können eine kürzere Schreibweise für Funktionen sein</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Arrow Functions haben ein anderes this-Verhalten als function() in vielen Fällen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#66</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Scope sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">let und const sind block-scoped</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">var ist function-scoped</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Scope beschreibt, wo Variablen sichtbar/verwendbar sind</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Scope ist ein CSS-Konzept</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#67</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Hoisting sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Funktionsdeklarationen werden oft vor ihrer Position nutzbar (hoisted)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">let/const werden wie var behandelt und sind immer ohne Fehler vor Deklaration nutzbar</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">var-Deklarationen werden „hochgezogen“, aber initialisiert erst später</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Hoisting bedeutet, dass der Code schneller ausgeführt wird</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#68</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Object.keys() sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es liefert ein Array der eigenen (enumerable) Schlüsselnamen eines Objekts</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es liefert ein Array aller Werte eines Objekts</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es funktioniert nur für Arrays, nicht für Objekte</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es ist nützlich, um über Properties zu iterieren</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#69</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu Optional Chaining (?.) sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es verhindert Fehler beim Zugriff auf tief verschachtelte Properties, wenn etwas undefined/null ist</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es ersetzt immer try/catch</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es kann auch bei Funktionsaufrufen genutzt werden (z.B. obj.fn?.())</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es ist identisch zu &amp;&amp; in jedem Fall</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#70</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu Event Listenern sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">addEventListener(&quot;click&quot;, ...) reagiert auf Klicks</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Events sind z.B. Klicks, Tastatur-Eingaben oder Submit</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Events entstehen nur im Backend</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Man kann mit preventDefault() Standardverhalten verhindern (z.B. bei Formularen)</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="DOM">
+      <h2>DOM <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#30</span></div>
+        <p class="qtext">Wofür steht DOM und was ist es?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Document Object Model: die Struktur, die der Browser aus HTML erzeugt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Data Object Mode: ein JavaScript-Modus für Datenbanken</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Design Operation Method: eine CSS-Layouttechnik</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Document Order Map: eine Liste von CSS-Regeln</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#31</span></div>
+        <p class="qtext">Was macht document.getElementById()?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Es erstellt ein neues Element mit einer ID</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es findet ein Element anhand seiner eindeutigen ID</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es gibt immer eine Liste aller Elemente zurück</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es löscht ein Element aus dem DOM</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#32</span></div>
+        <p class="qtext">Welche Aufgaben übernimmt classList typischerweise?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">CSS-Klassen hinzufügen/entfernen/togglen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">HTTP-Header bearbeiten</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Elemente in der Datenbank speichern</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Die Reihenfolge von Arrays sortieren</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="APIs">
+      <h2>APIs <small>(1 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#36</span></div>
+        <p class="qtext">Was ist eine API?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Eine Schnittstelle, über die Programme Daten austauschen/aufrufen können</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein HTML-Tag für Formulare</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine Datenbanktabelle</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Browser-Plugin für CSS</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Async JS">
+      <h2>Async JS <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#37</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über async/await sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">await kann innerhalb einer async-Funktion verwendet werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">await macht asynchronen Code lesbarer, indem es wie „synchron“ wirkt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">await blockiert immer den gesamten Browser-Thread vollständig</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">async-Funktionen geben typischerweise ein Promise zurück</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#38</span></div>
+        <p class="qtext">Wie fängt man Fehler bei einer fetch-Anfrage robust ab?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Mit try/catch bei async/await oder .catch() bei Promises</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur mit if/else, try/catch funktioniert nicht</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Mit console.log(), das ersetzt Fehlerbehandlung</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Gar nicht, fetch wirft keine Fehler</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Tooling">
+      <h2>Tooling <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#39</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Wofür werden Developer Tools im Browser typischerweise genutzt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">HTML/CSS inspizieren und live anpassen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Netzwerk-Requests (Network Tab) analysieren</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">JavaScript debuggen (Breakpoints, Console)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Server-RAM physisch erweitern</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#77</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über npm sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">npm verwaltet JavaScript-Pakete/Dependencies</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">package.json beschreibt u.a. Abhängigkeiten und Scripts</span></li><li class="opt"><span class="mark">✓</span><span class="txt">npm kann nur für React genutzt werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">npm install installiert Abhängigkeiten (typischerweise in node_modules)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#78</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was macht npm run build typischerweise in einem Frontend-Projekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es erstellt eine Produktionsversion (optimiert) der App</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es startet immer automatisch den Dev-Server</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es erzeugt oft einen Output-Ordner (z.B. dist oder build)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es löscht alle Abhängigkeiten</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Accessibility">
+      <h2>Accessibility <small>(1 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#40</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Maßnahmen verbessern typischerweise Accessibility (Barrierefreiheit)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Sinnvolle semantische HTML-Tags (z.B. &lt;nav&gt;, &lt;main&gt;)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Alt-Texte für Bilder, wenn sie Inhalt transportieren</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Nur Farben als einziges Mittel zur Informationsvermittlung</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Labels für Form-Inputs</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Security">
+      <h2>Security <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#41</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu XSS (Cross-Site Scripting) sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">XSS bedeutet, dass unerwünschter Script-Code in Seiten eingeschleust werden kann</span></li><li class="opt"><span class="mark">✓</span><span class="txt">XSS hat nur mit Netzwerkhardware zu tun</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Escaping/Sanitizing von User-Input hilft, XSS zu vermeiden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">XSS ist identisch mit CSS Grid</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#99</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über sichere Passwörter/Authentifizierung sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Passwörter sollten niemals im Klartext gespeichert werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">HTTPS hilft, Daten auf dem Transportweg zu schützen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">„123456“ ist ein gutes Passwort, weil es leicht zu merken ist</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Multi-Factor Authentication (MFA) kann Sicherheit erhöhen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React Basics">
+      <h2>React Basics <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#42</span></div>
+        <p class="qtext">Was ist React am treffendsten?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Eine JavaScript-Bibliothek zum Bauen von Benutzeroberflächen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Eine Programmiersprache</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Backend-Server</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein CSS-Framework</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#43</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Warum teilt man React-Apps in Komponenten auf?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Code wird übersichtlicher und besser wartbar</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Komponenten können wiederverwendet werden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Komponenten ersetzen automatisch jede API</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">UI und Logik lassen sich sinnvoll kapseln</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React">
+      <h2>React <small>(10 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#44</span></div>
+        <p class="qtext">Was sind Props in React?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Daten/Eigenschaften, die von außen an eine Komponente übergeben werden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Ersatz für CSS</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein interner Zustand, der nur der Komponente gehört</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Browser-Feature für HTTP</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#45</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen zu State in React sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">State ist der aktuelle Zustand einer Komponente, der sich ändern kann</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Eine State-Änderung kann ein Re-Render auslösen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">State sollte immer direkt mutiert werden (state.value = ...)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">useState liefert typischerweise [wert, setter]</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#80</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über JSX sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">JSX ist eine Syntax-Erweiterung, um UI ähnlich wie HTML zu beschreiben</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">In JSX kann man JavaScript-Ausdrücke mit {} einbetten</span></li><li class="opt"><span class="mark">✓</span><span class="txt">JSX wird vom Browser direkt ohne Build-Tool verstanden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">JSX muss immer in Anführungszeichen geschrieben werden</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#81</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was ist beim Rendern von Listen in React wichtig?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Man nutzt häufig map(), um aus Daten JSX-Elemente zu erzeugen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Jedes Listenelement sollte einen stabilen key erhalten</span></li><li class="opt"><span class="mark">✓</span><span class="txt">key sollte idealerweise bei jedem Render zufällig neu generiert werden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">React braucht keys nie</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#82</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über keys in React sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Keys helfen React, Elemente zwischen Renders wiederzuerkennen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Stabile Keys verbessern oft Performance und verhindern UI-Bugs bei Listen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Index als key ist immer perfekt und ohne Nachteile</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Keys müssen nur innerhalb einer Liste eindeutig sein</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#83</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Conditional Rendering in JSX sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Mit &amp;&amp; kann man etwas nur rendern, wenn links truthy ist</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Mit dem ternären Operator kann man zwischen zwei UI-Varianten wählen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">if-Statements können direkt in JSX (ohne Hilfsfunktion) stehen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Man kann auch früh returnen (early return), um Bedingungen abzubilden</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#87</span></div>
+        <p class="qtext">Was bedeutet „State anheben“ (lifting state up)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">State in eine übergeordnete Komponente verschieben, damit mehrere Kinder ihn nutzen können</span></li><li class="opt"><span class="mark">✓</span><span class="txt">State in eine tiefere Komponente verschieben, um ihn zu verstecken</span></li><li class="opt"><span class="mark">✓</span><span class="txt">State komplett löschen und durch Props ersetzen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">State automatisch global machen</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#88</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über children-Props sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">children enthält Inhalte, die zwischen den Component-Tags stehen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">children wird genutzt, um Komponenten „komponierbar“ zu machen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">children kann nur Text sein, niemals andere Komponenten</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">children ist eine Standard-Prop in React</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#89</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über React Context sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Context hilft, Daten „globaler“ verfügbar zu machen, ohne Props durch viele Ebenen zu reichen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Context ist ausschließlich für CSS gedacht</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Man greift häufig über useContext() auf Context zu</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Context ersetzt jede Form von State-Management immer vollständig</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#90</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über fetch in React sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">fetch wird genutzt, um Daten vom Server zu laden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">fetch muss immer in render() aufgerufen werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">API-Aufrufe macht man oft in useEffect, um Nebenwirkungen zu kapseln</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">fetch liefert typischerweise ein Promise zurück</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React Hooks">
+      <h2>React Hooks <small>(5 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#46</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Regeln gelten für React Hooks?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Hooks nur in React-Komponenten oder anderen Hooks verwenden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Hooks dürfen in Schleifen und Bedingungen beliebig aufgerufen werden</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Hooks sollten immer in der gleichen Reihenfolge aufgerufen werden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Hooks funktionieren nur in Klassenkomponenten</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#47</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Wofür wird useEffect typischerweise verwendet?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Für Nebenwirkungen wie Daten laden, Subscriptions, Timer</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um JSX zu ersetzen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um Props zu definieren</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Um auf Änderungen bestimmter Werte zu reagieren (Dependency Array)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#84</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über useState sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">useState gibt einen aktuellen Wert und eine Setter-Funktion zurück</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Der Setter triggert typischerweise einen Re-Render</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Man sollte State immer direkt mutieren (z.B. state.count++)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">useState kann Initialwerte als Funktion erhalten (lazy init)</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#85</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über das Dependency Array in useEffect sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es steuert, wann der Effekt erneut ausgeführt wird</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Ein leeres Array bedeutet: Effekt läuft nur einmal nach dem ersten Render (typisch)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Ohne Array läuft der Effekt nach jedem Render</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Das Array speichert automatisch State-Werte dauerhaft</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#86</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über useRef sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">useRef kann eine mutable Referenz speichern, ohne Re-Renders auszulösen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">useRef eignet sich u.a. für DOM-Zugriff (z.B. Input fokussieren)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">useRef ersetzt immer useState</span></li><li class="opt"><span class="mark">✓</span><span class="txt">useRef-Werte werden bei jedem Render automatisch zurückgesetzt</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React Forms">
+      <h2>React Forms <small>(1 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#48</span></div>
+        <p class="qtext">Was ist ein kontrolliertes Input-Feld (controlled component)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Ein Input, dessen Wert aus React-State kommt und via onChange aktualisiert wird</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Input, der ohne value-Prop besser funktioniert</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Input, der nur per document.getElementById() gelesen wird</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Ein Input, der immer disabled ist</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React Router">
+      <h2>React Router <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#49</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Warum nutzt man React Router in Single Page Applications (SPAs)?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Um URL-basierte Navigation ohne komplettes Neuladen zu ermöglichen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um Datenbanktabellen im Browser zu erstellen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Um CSS automatisch zu generieren</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Um verschiedene „Seiten“/Views über Routen zu organisieren</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#91</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Client-Side Routing sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Navigation kann ohne vollständigen Seitenreload passieren</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Die URL kann sich ändern, obwohl nur eine HTML-Seite geladen wurde</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Routing bedeutet, dass der Server immer jede Seite als separate HTML-Datei ausliefert</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">SPAs nutzen oft Client-Side Routing</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#92</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Wozu dient eine Catch-All Route (z.B. /*) typischerweise?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Sie fängt unbekannte Pfade ab</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Sie zeigt oft eine NotFound/404-Komponente</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Sie matcht häufig erst, wenn keine andere Route passt</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Sie hat immer automatisch Vorrang vor allen anderen Routen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="React Performance">
+      <h2>React Performance <small>(3 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#50</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über unnötige Re-Renders und Optimierung sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Unnötige Re-Renders können Performance verschlechtern</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">React.memo kann helfen, Re-Renders bei gleichen Props zu vermeiden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Man sollte immer sofort alles optimieren, bevor es funktioniert</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Optimierung ist oft nach funktionaler Korrektheit und bei echten Problemen sinnvoll</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#93</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über React.memo sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">React.memo kann Re-Renders vermeiden, wenn Props unverändert sind</span></li><li class="opt"><span class="mark">✓</span><span class="txt">React.memo funktioniert nur bei Klassenkomponenten</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">React.memo ist eine Optimierung und nicht immer nötig</span></li><li class="opt"><span class="mark">✓</span><span class="txt">React.memo ersetzt useEffect vollständig</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#94</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Warum können anonyme Funktionen in JSX manchmal problematisch sein?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Sie können bei jedem Render eine neue Referenz erzeugen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Das kann unnötige Re-Renders in Child-Komponenten verursachen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Sie sind grundsätzlich verboten in React</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Sie machen Code manchmal schwerer lesbar</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Web APIs">
+      <h2>Web APIs <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#71</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über localStorage sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Daten bleiben in der Regel nach einem Reload bestehen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">localStorage speichert nur für die aktuelle Browser-Session und wird danach gelöscht</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es speichert Strings (Objekte müssen oft per JSON.stringify gespeichert werden)</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">localStorage ist pro Origin (Domain/Protokoll/Port) getrennt</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#72</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über sessionStorage sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Daten sind typischerweise nur für den Tab/Session gültig</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Daten bleiben für immer erhalten, auch nach Browser-Neustart</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es speichert Strings ähnlich wie localStorage</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es ist pro Origin getrennt</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Performance">
+      <h2>Performance <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#75</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Maßnahmen verbessern oft Web-Performance?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Bilder optimieren (Größe/Format) und lazy loading nutzen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Unnötiges JavaScript reduzieren (Bundle kleiner halten)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Alles in eine riesige CSS-Datei ohne Struktur packen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Caching nutzen (Browser/Server), wo sinnvoll</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#76</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Rendering sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Der Browser parst HTML und baut daraus das DOM</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">CSS beeinflusst Layout und Paint</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">JavaScript kann das DOM verändern und dadurch Reflows/Repaints auslösen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Rendering passiert nur beim ersten Seitenaufruf, nie wieder</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Deployment">
+      <h2>Deployment <small>(1 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#79</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Was bedeutet Deployment im Web-Kontext typischerweise?</p>
+        <ul class="opts">
+          <li class="opt"><span class="mark">✓</span><span class="txt">Eine App lokal entwickeln</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Eine App im Internet/auf einem Server bereitstellen</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Eine App für Nutzer zugänglich machen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Den Code nur als PDF exportieren</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Testing">
+      <h2>Testing <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#95</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über Unit-Tests sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Unit-Tests testen eine kleine Einheit (z.B. Funktion/Komponente) isoliert</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Unit-Tests ersetzen alle manuellen Tests vollständig</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Unit-Tests helfen, Fehler früh zu erkennen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Unit-Tests testen immer das komplette System-Ende-zu-Ende</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#96</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über das Ziel von Testing sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Fehler früh erkennen und Regressionen vermeiden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Code automatisch schöner machen ohne Review</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Vertrauen in Änderungen erhöhen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">APIs vollständig ersetzen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="topic" data-topic="Architecture">
+      <h2>Architecture <small>(2 Fragen)</small></h2>
+      
+      <article class="q">
+        <div class="qhead"><span class="num">#97</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Welche Aussagen über „Single Source of Truth“ sind korrekt?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Es bedeutet, dass Daten/Zustand eine eindeutige, verlässliche Quelle haben sollen</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es bedeutet, dass jede Komponente ihren eigenen Zustand immer duplizieren soll</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Es kann helfen, Inkonsistenzen zu vermeiden</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Es bedeutet, dass alles nur im Backend liegen darf</span></li>
+        </ul>
+      </article>
+      <article class="q">
+        <div class="qhead"><span class="num">#98</span><span class="multi">mehrere richtig</span></div>
+        <p class="qtext">Warum ist eine saubere Ordnerstruktur in Projekten oft wichtig?</p>
+        <ul class="opts">
+          <li class="opt correct"><span class="mark">✓</span><span class="txt">Bessere Wartbarkeit und Orientierung</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Bessere Teamarbeit (Konventionen, Auffindbarkeit)</span></li><li class="opt"><span class="mark">✓</span><span class="txt">Automatisch schnelleres Rendering im Browser</span></li><li class="opt correct"><span class="mark">✓</span><span class="txt">Reduziert Merge-Konflikte häufig indirekt</span></li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <footer>IHK-Trainer – Lernzettel · zum Lernen &amp; Selbst-Abfragen</footer>
+
+  <script>
+    // Themen-Filter
+    function filter(btn) {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+      const t = btn.dataset.topic;
+      document.querySelectorAll('.topic').forEach(sec => {
+        sec.style.display = (t === '__all__' || sec.dataset.topic === t) ? '' : 'none';
+      });
+      window.scrollTo(0,0);
+    }
+    // Lösungen ein-/ausblenden (zum Selbst-Abfragen)
+    function toggleAns() {
+      document.body.classList.toggle('hide');
+      document.getElementById('t').textContent =
+        document.body.classList.contains('hide') ? 'Antworten einblenden' : 'Antworten ausblenden';
+    }
+  </script>
+</body>
+</html>
